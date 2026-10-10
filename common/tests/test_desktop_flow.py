@@ -26,11 +26,12 @@ def _run_flow(flow: GoogleOAuthDesktopFlow, state_override: str | None = None, e
 
     t = threading.Thread(target=runner)
     t.start()
-    # Wait for the URL to be printed, then act as the browser.
-    for _ in range(200):
+    # Wait (up to 30 s — slow CI runners) for the URL to be printed, then act as the browser.
+    for _ in range(1500):
         if printed:
             break
         threading.Event().wait(0.02)
+    assert printed, "flow did not print the sign-in URL within 30 s"
     url = re.search(r"https://accounts\.google\.com\S+", printed[0]).group(0)
     q = {k: v[0] for k, v in parse_qs(urlsplit(url).query).items()}
     callback = q["redirect_uri"]

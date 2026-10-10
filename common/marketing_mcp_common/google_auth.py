@@ -32,6 +32,7 @@ import json
 import os
 import secrets
 import socket
+import socketserver
 import threading
 import time
 import webbrowser
@@ -280,6 +281,13 @@ class _CallbackServer(http.server.HTTPServer):
         self.app_name = app_name
         self.callback_path = callback_path
         self.result: dict[str, str] | None = None
+
+    def server_bind(self) -> None:
+        # Skip HTTPServer's socket.getfqdn() lookup: it can block for seconds on macOS/VPN DNS
+        # and we only ever serve the loopback address.
+        socketserver.TCPServer.server_bind(self)
+        self.server_name = _LOOPBACK_HOST
+        self.server_port = self.server_address[1]
 
 
 class GoogleOAuthDesktopFlow:

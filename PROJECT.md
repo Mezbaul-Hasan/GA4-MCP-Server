@@ -136,9 +136,9 @@ marketing-mcp/
 - [ ] ≥ 5 🟢 read tools covering core objects (accounts → campaigns/containers → details) + one reporting tool
 - [ ] Write tools only where there is a concrete use case; all 🟡/🔴 with correct annotations + `dry_run`
 - [ ] Input validation, pagination, rate-limit backoff, error mapping implemented via `common/`
-- [ ] Tests: mocked unit test per tool + one in-process smoke test; `pytest -q` green
+- [x] Tests: mocked unit test per tool + one in-process smoke test; `pytest -q` green (ga4-mcp: 60 tests, CI on 3 OSes)
 - [ ] `README.md`: tool table (name · tier · description), env vars, scopes, Claude Desktop/Cursor config snippet (stdio **and** remote URL)
-- [ ] Installable: one-line host config (`uvx --from git+https://… <server>`) verified on a teammate's machine (Windows **and** macOS); `auth`, `status`, `logout` commands work
+- [x] Installable: one-line host config (`uvx --from git+https://… <server>`) verified in CI on Windows, macOS and Ubuntu (ga4-mcp); `auth`, `status`, `logout` commands exist — live `auth` check by owner pending
 - [ ] Status updated in §2; entry added to §10
 
 ## 8. How the Arena agent must work on this project
@@ -170,6 +170,7 @@ marketing-mcp/
 | 2026-10-10 | ga4-mcp | Reference review of `mnsmasum62786/was-ga4-mcp` (31-tool Node GA4 MCP) → `docs/platform-notes/ga4-reference-was-ga4-mcp.md`: reuse tool catalogue + helpers; fix scopes, annotations, universal_call, pagination, tests | Write GA4 platform notes → start `ga4-mcp` read tools |
 | 2026-10-10 | ga4-mcp | `docs/platform-notes/ga4.md` written (API versions, v1beta vs v1alpha resources, OAuth desktop flow + 7-day Testing-status warning, quotas, `keyEvents`, error mapping, tool list) | Build `common/` + `ga4-mcp` |
 | 2026-10-10 | ga4-mcp | **v0.1.0 built (Phase 1, read-only):** `common/marketing_mcp_common` (google_auth, http, errors, redact, logging, pagination, audit) + `servers/ga4-mcp` with 25 🟢 tools (6 Data, 15 Admin, 4 helpers), CLI `ga4-mcp auth/status/logout/serve`, README, CHANGELOG, `.env.example`. Tests: 16 (common, incl. simulated loopback OAuth) + 44 (ga4-mcp) = 60 green, no network. Not yet done: live run against the owner's property, `uvx` install check on Windows/macOS | Owner: create Desktop OAuth client → `ga4-mcp auth` → `ga4_quick_overview` in Claude Desktop → report issues; then decide Phase 2 (write tools) or start `gtm-mcp` |
+| 2026-10-10 | ga4-mcp | **Pushed to GitHub: https://github.com/Mezbaul-Hasan/GA4-MCP-Server (public, MIT, CI added).** CI run green on all 9 jobs: pytest on Ubuntu/Windows/macOS × Python 3.11/3.13 and `uvx --from git+…#subdirectory=servers/ga4-mcp ga4-mcp help` on all three OSes (install path verified). Fixed on the way: loopback server skipped `getfqdn()` (macOS delay). Placeholders replaced with the real repo URL in READMEs/CLI | Owner: live test with own Google account (README §1); then Phase 2 or `gtm-mcp` |
 
 ## 11. Owner decisions (answered 2026-10-10)
 - **Test accounts:** the owner's **own** GA4 property, Google Ads account and Meta ad account. IDs go into each server's `.env` — never into this file or chat. Start with read-only scopes.

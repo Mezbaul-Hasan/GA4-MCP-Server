@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  tests:
+    name: tests (${{ matrix.os }}, py${{ matrix.python }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python: ["3.11", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install (editable) with dev extras
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e "common[dev]" -e "servers/ga4-mcp[dev]"
+      - name: Test shared library
+        working-directory: common
+        run: pytest -q
+      - name: Test ga4-mcp (25 tools, mocked Google APIs)
+        working-directory: servers/ga4-mcp
+        run: pytest -q
+      - name: CLI smoke
+        run: ga4-mcp help
+
+  uvx-install:
+    name: uvx install check (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: astral-sh/setup-uv@v6
+      - name: Install ga4-mcp from this commit exactly like a teammate would
+        shell: bash
+        run: uvx --from "git+https://github.com/${{ github.repository }}@${{ github.sha }}#subdirectory=servers/ga4-mcp" ga4-mcp help

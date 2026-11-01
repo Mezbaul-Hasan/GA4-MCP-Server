@@ -1,0 +1,30 @@
+# secrets
+.env
+.env.*
+!.env.example
+*.json.tmp
+
+# python
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+.venv/
+build/
+dist/
+
+# arena / tooling caches
+.cache/
+.npm/
+
+# release artifacts
+*.zip
+
+# sandbox/user dirs
+.local/
+.config/
+
+# local-only material (client audits, screenshots, sandbox markers)
+audits/
+uploads/
+.sudo_as_admin_successful
